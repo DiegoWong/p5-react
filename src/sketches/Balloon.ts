@@ -16,44 +16,43 @@ export function Balloon(p5i: P5CanvasInstance) {
     constructor() {
       this.x = p5i.width / 2;
       this.y = p5i.height;
-      this.helium = p5i.createVector(0, -0.01);
-      this.wind = p5i.createVector(0.01, 0);
+      this.helium = p5i.createVector(0, -0.1);
+      this.wind = p5i.createVector(0.1, 0);
       this.acceleration = p5i.createVector(0, 0);
       this.velocity = p5i.createVector(0, 0);
-      this.velocity.limit(5);
       this.position = p5i.createVector(this.x, this.y);
     }
 
-    rebound() {
-      const mag = p5i.map(p5i.noise(t), 0, 1, -1, -5);
-      this.acceleration.setMag(mag)
-    }
-
-    reboundWind() {
-      const mag = p5i.map(p5i.noise(t), 0, 1, -1, -5);
-      this.wind.setMag(mag)
+    calculateWind() {
+      const mag = p5i.map(p5i.noise(t), 0, 1, -1, 1);
+      this.wind = p5i.createVector(mag, 0);
     }
 
     move() {
+      this.calculateWind();
+      if (this.position.y - 10 <= 0) {
+
+        // this.handleBounce():
+        this.position.y = 10
+        this.velocity.y *= -0.75
+      }
+
       this.acceleration.add(this.helium);
       this.acceleration.add(this.wind);
       this.velocity.add(this.acceleration);
-      this.position.add(this.acceleration)
-      if (this.position.y < 0) {
-        this.rebound()
-        this.velocity.add(this.acceleration);
-        this.position.add(this.velocity);
+      this.velocity.limit(5);
+      this.position.add(this.velocity)
+      if (this.position.x > p5i.width) {
+        this.position.x = 0
       }
-      if (this.position.x > p5.width || this.position.x < 0) {
-        this.reboundWind()
-        this.velocity.add(this.wind);
-        this.position.add(this.velocity);
+      if (this.position.x < 0) {
+        this.position.x = p5i.width
       }
       t += 0.01
+      this.acceleration.mult(0);
     }
 
     draw() {
-      console.log(this.position.x, this.position.y)
       p5i.background(255);
       p5i.circle(this.position.x, this.position.y, 20);
       p5i.fill(p5i.color(76, 0, 153));
