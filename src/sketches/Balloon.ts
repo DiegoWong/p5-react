@@ -20,6 +20,7 @@ export function Balloon(p5i: P5CanvasInstance) {
       this.wind = p5i.createVector(0.1, 0);
       this.acceleration = p5i.createVector(0, 0);
       this.velocity = p5i.createVector(0, 0);
+      this.velocity.limit(5);
       this.position = p5i.createVector(this.x, this.y);
     }
 
